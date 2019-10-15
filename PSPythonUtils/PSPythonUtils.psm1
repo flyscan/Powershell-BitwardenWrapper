@@ -18,9 +18,9 @@ Class ValidVenvNames : System.Management.Automation.IValidateSetValuesGenerator 
 }
 
 function Get-CurrentVirtualEnvs {
-  Write-Output "Current virtualenvs:"
+  Write-Output "Current virtualenvs`n"
 
-  Get-ChildItem $VENV_PATH | Select-Object -ExpandProperty Name
+  Get-ChildItem $Script:VENV_PATH | Select-Object -ExpandProperty Name
 }
 
 function Remove-VirtualEnv {
@@ -32,7 +32,7 @@ function Remove-VirtualEnv {
     $VenvName
   )
 
-  $venv = Join-Path $VENV_PATH $VenvName | Get-Item
+  $venv = Join-Path $Script:VENV_PATH $VenvName | Get-Item
 
   Remove-Item -Recurse -Confirm $venv
 }
@@ -47,10 +47,10 @@ function Remove-UnusedVirtualenvs {
 }
 
 function Add-PythonConfigsHere {
-  $TOOLS.GetEnumerator() | ForEach-Object {
+  $Script:TOOLS.GetEnumerator() | ForEach-Object {
     $tool = $_.Name
     $configFilename = $_.Value
-    $globalFile = Join-Path $CONFIG_FOLDER $configFilename | Get-Item
+    $globalFile = Join-Path $Script:CONFIG_FOLDER $configFilename | Get-Item
 
     New-Item -ItemType HardLink -Name $configFilename -Value $globalFile
 
@@ -61,16 +61,3 @@ function Add-PythonConfigsHere {
 Set-Alias ls-venvs Get-CurrentVirtualEnvs
 Set-Alias rm-venv Remove-Virtualenv
 Set-Alias prune-venvs Remove-UnusedVirtualenvs
-
-$FunctionsToExport = @(
-  "Add-PythonConfigsHere"
-  "Get-CurrentVirtualEnvs"
-  "Remove-VirtualEnv"
-  "Remove-UnusedVirtualenvs"
-)
-$AliasesToExport = @(
-  "ls-venvs"
-  "prune-venvs"
-  "rm-venv"
-)
-Export-ModuleMember -Function $FunctionsToExport -Alias $AliasesToExport
