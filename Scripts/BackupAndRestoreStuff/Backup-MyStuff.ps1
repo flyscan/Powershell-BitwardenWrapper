@@ -80,3 +80,5 @@ function Get-ReadableEnvPath {
 # others????
 # XXX how to export settings?
 # TODO check if i need to backup something else
+
+# TODO !! convert to module

@@ -9,6 +9,7 @@ $TOOLS = @{
   # Yapf     = ".style.yapf"
 }
 
+# XXX how to export types? ps1xml or "using" keyword?
 Class ValidVenvNames : System.Management.Automation.IValidateSetValuesGenerator {
   [String[]] GetValidValues() {
     # XXX global bad?
