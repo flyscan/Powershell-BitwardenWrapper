@@ -33,18 +33,23 @@ function Remove-VirtualEnv {
     $VenvName
   )
 
-  $venv = Join-Path $Script:VENV_PATH $VenvName | Get-Item
-
-  Remove-Item -Recurse -Confirm $venv
+  Join-Path $Script:VENV_PATH $VenvName |
+    Get-Item |
+    Remove-Item -Recurse
 }
 
 function Remove-UnusedVirtualenvs {
-  Get-ChildItem $Script:VENV_PATH | Where-Object {
-    $venv = $_
-    $projectFolderName = Get-Content (Join-Path $venv.FullName ".project")
+  [CmdletBinding()]
+  param()
 
-    -not (Test-Path $projectFolderName)
-  } | Remove-Item -Recurse -Confirm
+  Get-ChildItem $Script:VENV_PATH |
+    Where-Object {
+      $venv = $_
+      $projectFolderName = Get-Content (Join-Path $venv.FullName ".project")
+
+      -not (Test-Path $projectFolderName)
+    } |
+    Remove-Item -Recurse -Verbose
 }
 
 function Add-PythonConfigsHere {
