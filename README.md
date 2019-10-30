@@ -6,6 +6,8 @@ TODO add tests to pretty much everything
 TODO add documentation to pretty much everything
 -->
 
+![](https://github.com/erclu/powershell-utils/workflows/PowerShell%20Core%20CI)
+
 Some (arguably) useful utilities I wrote.
 
 ## BackupAndRestoreStuff

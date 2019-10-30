@@ -1,4 +1,4 @@
-name: Main PowerShell Core workflow
+name: PowerShell Core CI
 
 on:
   push:
@@ -7,20 +7,38 @@ on:
 
 jobs:
   test:
-
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: true
+      max-parallel: 2
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os:
+          - ubuntu-latest
+          - windows-latest
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-    - name: Update Pester to latest version
-      run: Install-Module -Name Pester -Force -SkipPublisherCheck
-      shell: pwsh
+      - name: Update Pester to latest version
+        run: Install-Module -Force -Scope CurrentUser -Name Pester
+        shell: pwsh
 
-    - name: Run pester tests
-      run: Invoke-Pester
-      shell: pwsh
+      - name: Run pester tests
+        run: Invoke-Pester -EnableExit -Path "."
+        shell: pwsh
+
+  # TODO maybe use pester to run psscriptanalyzer?
+  lint:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Update PSScriptAnalyzer to latest version
+        run: Install-Module -Force -Scope CurrentUser -Name PSScriptAnalyzer
+        shell: pwsh
+
+      - name: run PSScriptAnalyzer
+        run: Invoke-ScriptAnalyzer -EnableExit -Severity Warning -Recurse -Path "."
+        shell: pwsh
