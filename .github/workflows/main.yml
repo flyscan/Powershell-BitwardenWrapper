@@ -40,5 +40,5 @@ jobs:
         shell: pwsh
 
       - name: run PSScriptAnalyzer
-        run: Invoke-ScriptAnalyzer -EnableExit -Severity Warning -Recurse -Path "."
+        run: Invoke-ScriptAnalyzer -EnableExit -Settings PSScriptAnalyzerSettings.psd1 -Recurse -Path "."
         shell: pwsh
