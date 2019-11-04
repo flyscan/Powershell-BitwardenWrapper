@@ -19,6 +19,7 @@ Get-ChildItem -Force -Recurse $RootFolder -Include ".git" |
     #   Write-Output "all backed up in     $workTree"
     # }
     [pscustomobject]@{
+      PSTypename          = "GitRepo"
       Repo                = $workTree
       AllGood             = -not ($dirtyIndex -or $unpushedCommits -or $forgottenStashes)
       "Changes to commit" = $dirtyIndex
@@ -26,4 +27,4 @@ Get-ChildItem -Force -Recurse $RootFolder -Include ".git" |
       "Stashes to clear"  = $forgottenStashes
     }
   } |
-  Format-Table -Wrap
+  Format-Table
