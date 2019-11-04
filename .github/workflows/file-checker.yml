@@ -1,15 +1,16 @@
 # TODO check line endings too
-name: Check BOMs
+name: BOMs checker
+# name: No BOMs or CRLF endings
 
 on: push
 
 jobs:
   check-bom:
-    name: check files for BOMs
+    name: check all files for BOMs
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Check if any file has a BOM
+      - name: use external action to check for BOMs
         uses: arma-actions/bom-check@v1.0

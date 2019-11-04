@@ -7,6 +7,8 @@ TODO add documentation to pretty much everything
 
 ![](https://github.com/erclu/powershell-utils/workflows/PowerShell%20Core%20CI/badge.svg)
 
+![](https://github.com/erclu/powershell-utils/workflows/BOMs%20checker/badge.svg)
+
 Some (arguably) useful utilities I wrote.
 
 ## BackupAndRestoreStuff
