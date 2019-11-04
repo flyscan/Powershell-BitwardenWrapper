@@ -32,5 +32,3 @@ function Install-Pipx {
 function Export-Pipx {
   # TODO which packages were installed globally?
 }
-
-# TODO !! convert to module

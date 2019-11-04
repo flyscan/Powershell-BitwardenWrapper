@@ -1,7 +1,6 @@
 # My PowerShell utilities
 
 <!--
-TODO publish repo
 TODO add tests to pretty much everything
 TODO add documentation to pretty much everything
 -->

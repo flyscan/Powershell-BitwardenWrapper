@@ -25,7 +25,7 @@ function Get-CurrentVirtualEnvs {
 }
 
 function Remove-VirtualEnv {
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
   param (
     [Parameter(Mandatory = $true)]
     [ValidateSet([ValidVenvNames])]
@@ -33,13 +33,15 @@ function Remove-VirtualEnv {
     $VenvName
   )
 
-  Join-Path $Script:VENV_PATH $VenvName |
-    Get-Item |
-    Remove-Item -Recurse
+  if ($PSCmdlet.ShouldProcess($VenvName)) {
+    Join-Path $Script:VENV_PATH $VenvName |
+      Get-Item |
+      Remove-Item -Recurse
+  }
 }
 
 function Remove-UnusedVirtualenvs {
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
   param()
 
   Get-ChildItem $Script:VENV_PATH |
@@ -48,8 +50,11 @@ function Remove-UnusedVirtualenvs {
       $projectFolderName = Get-Content (Join-Path $venv.FullName ".project")
 
       -not (Test-Path $projectFolderName)
-    } |
-    Remove-Item -Recurse -Verbose
+    } | ForEach-Object {
+      if ($PSCmdlet.ShouldProcess($_.Name)) {
+        Remove-Item -Recurse $_
+      }
+    }
 }
 
 function Add-PythonConfigsHere {
