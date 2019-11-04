@@ -20,6 +20,7 @@
       "type": "shell",
       "command": "./.vscode/Copy-PublicFunctionNames.ps1",
       "args": [
+        // TODO find way to validate folder names
         "${input:moduleFolder}"
       ],
       "presentation": {
@@ -72,7 +73,7 @@
   "inputs": [
     {
       "id": "moduleFolder",
-      "description": "available modules in current workspace",
+      "description": "write name (case insensitive) of the target module",
       "type": "promptString"
     }
   ]

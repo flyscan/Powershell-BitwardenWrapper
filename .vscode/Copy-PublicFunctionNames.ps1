@@ -3,6 +3,7 @@
 param (
   # Root folder of the module
   [Parameter(Mandatory)]
+  [ValidateScript( { Test-Path -LiteralPath $_ })]
   [System.IO.DirectoryInfo]
   $ModuleFolder,
   # Optional files to exclude
@@ -12,7 +13,9 @@ param (
 
 # TODO manage single-file module
 $Public = Join-Path $ModuleFolder "Public"
-if (-not (Test-Path $Public)) { throw "No public folder found in module" }
+if (-not (Test-Path $Public)) {
+  throw "No public folder found in module"
+}
 
 Get-ChildItem $ModuleFolder -Recurse -Exclude "*Config.ps1", $Exclude -Include "*.ps1" |
   Where-Object FullName -notmatch 'Scripts' |
