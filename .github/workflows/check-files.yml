@@ -1,0 +1,24 @@
+name: Check for BOMs and CRLF endings
+
+on: push
+
+jobs:
+  check-bom:
+    name: check files for BOMs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use external action to check for BOMs
+        uses: arma-actions/bom-check@v1.0
+
+  check-crlf:
+    name: check files for crlf line endings
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use action to check for CRLF endings
+        uses: erclu/check-crlf@v1.0
