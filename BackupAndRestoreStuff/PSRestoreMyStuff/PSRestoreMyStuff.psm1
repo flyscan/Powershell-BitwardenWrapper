@@ -7,16 +7,14 @@ function Install-Scoop {
   # # Install scoop
   # Invoke-Expression (New-Object net.webclient).downloadstring('https://get.scoop.sh')
 
-  # # Add buckets & Install my stuff
-  # # TODO parse scoopedprograms.json and run commands!
-
-  # If you want to have an advanced installation. You can download the installer and manually execute it with parameters.
-
   Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -OutFile install.ps1
 
   .\install.ps1 -ScoopDir 'C:/Tools/scoop' -NoProxy -RunAsAdmin
 
   Remove-Item .\install.ps1
+
+  # Add buckets & Install my stuff
+  # TODO parse scoopedprograms.json and run commands!
 }
 
 function Install-Pipx {
@@ -28,3 +26,5 @@ function Install-Pipx {
   python3.exe -m pip install pipx
   python3.exe -m pipx ensurepath
 }
+
+# TODO finish implementing module

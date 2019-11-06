@@ -34,17 +34,17 @@ function Export-Scoop {
     when     = (Get-Date -Format "o")
     buckets  = $buckets
     programs = $programs
-  } | ConvertTo-Json
-
+  } |
+    ConvertTo-Json
 }
 
 ## npm globals
 # "npm install" takes multiple arguments separated by space
 function Export-NpmGlobalPackages {
-  $rawList = (npm.cmd list -g --depth=0 --parseable)
+  $rawList = npm.cmd list --global --depth=0 --parseable
 
   $baseFolder, $packages = $rawList
-  $basePath = (Join-Path $baseFolder "node_modules\")
+  $basePath = Join-Path $baseFolder "node_modules\"
 
   ($packages | ForEach-Object { $_ -replace [regex]::Escape($basePath) -replace "\\", "/" }) -join " "
 }
@@ -52,7 +52,7 @@ function Export-NpmGlobalPackages {
 ## python globals.
 # "pip install" can parse a file
 function Export-PipxGlobalPackages {
-  # pipdeptree.exe -f | Where-Object { $_ -notmatch "^ +" } | ForEach-Object { $_ -replace "==.+" }
+  # TODO finish implementing
   pipx.exe list | Where-Object { $_ -match "package (.*), Python" }
 }
 
@@ -60,11 +60,12 @@ function Export-EnvironmentVariables {
   $user = [Environment]::GetEnvironmentVariables("User")
   $machine = [Environment]::GetEnvironmentVariables("Machine")
 
-  ConvertTo-Json ([ordered]@{
-      when    = (Get-Date -Format "o")
-      user    = $user
-      machine = $machine
-    })
+  [ordered]@{
+    when    = (Get-Date -Format "o")
+    user    = $user
+    machine = $machine
+  } |
+    ConvertTo-Json
 } # > EnvironmentVariables.json
 
 function Get-SomeInstalledPrograms {
@@ -74,10 +75,4 @@ function Get-SomeInstalledPrograms {
     Format-Table -AutoSize
 }
 
-function Get-ReadableEnvPath {
-  ($env:Path).Split(";")
-}
-
-# others????
-# XXX how to export settings?
 # TODO check if i need to backup something else
