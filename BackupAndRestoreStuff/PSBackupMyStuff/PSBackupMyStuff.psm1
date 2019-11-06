@@ -30,12 +30,6 @@ function Export-Scoop {
   $programs = $parsed | Select-Object -ExcludeProperty Bucket
   $buckets = $parsed | Select-Object -Unique -ExpandProperty Bucket
 
-  # ConvertTo-Json ([ordered]@{
-  #  when     = (Get-Date -Format "o")
-  #  buckets  = $buckets
-  #  programs = $programs
-  #})
-
   [ordered]@{
     when     = (Get-Date -Format "o")
     buckets  = $buckets
@@ -57,7 +51,7 @@ function Export-NpmGlobalPackages {
 
 ## python globals.
 # "pip install" can parse a file
-function Export-PythonGlobalPackages {
+function Export-PipxGlobalPackages {
   # pipdeptree.exe -f | Where-Object { $_ -notmatch "^ +" } | ForEach-Object { $_ -replace "==.+" }
   pipx.exe list | Where-Object { $_ -match "package (.*), Python" }
 }
@@ -70,7 +64,14 @@ function Export-EnvironmentVariables {
       when    = (Get-Date -Format "o")
       user    = $user
       machine = $machine
-    }) # > EnvironmentVariables.json
+    })
+} # > EnvironmentVariables.json
+
+function Get-SomeInstalledPrograms {
+  Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+    Select-Object DisplayName, DisplayVersion, Publisher, InstallDate |
+    Sort-Object DisplayName |
+    Format-Table -AutoSize
 }
 
 function Get-ReadableEnvPath {
@@ -80,5 +81,3 @@ function Get-ReadableEnvPath {
 # others????
 # XXX how to export settings?
 # TODO check if i need to backup something else
-
-# TODO !! convert to module
