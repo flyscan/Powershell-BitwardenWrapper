@@ -7,41 +7,35 @@ Describe "Remove-EmptyFolders" {
   $testFolder = "$TestDrive/root folder"
   New-Item -ItemType Directory $testFolder
 
-  # create some folders and files
-
-  New-Item -ItemType Directory @(
-    "$testFolder/non empty1"
-    "$testFolder/nested non empty1/"
-    "$testFolder/nested non empty1/non empty2"
-  )
-
-  New-Item -ItemType File @(
-    "$testFolder/non empty1/a file.ext"
-    "$testFolder/nested non empty1/non empty2/another file.ext"
+  New-Item -Force -ItemType File @(
+    "$testFolder/ShouldNotBeDeleted1/file1.ext"
+    "$testFolder/ShouldNotBeDeleted2/ShouldNotBeDeleted3/file2.ext"
   )
 
   New-Item -ItemType Directory @(
-    "$testFolder/empty1"
-    "$testFolder/nested empty 1/empty2"
-    "$testFolder/nested non empty1/empty3"
+    "$testFolder/ShouldBeDeleted1"
+    "$testFolder/ShouldBeDeleted2/ShouldBeDeleted3"
+    "$testFolder/ShouldNotBeDeleted2/ShouldBeDeleted4"
   )
 
   # Act
   . "$here\$sut" -Confirm:$false $testFolder
 
-  It "does not remove non empty folders" {
-    @(
-      "$testFolder/non empty1/"
-      "$testFolder/nested non empty1/"
-      "$testFolder/nested non empty1/non empty2"
-    ) | ForEach-Object { Test-Path $_ | Should -Be $true }
+  ## Assert
+  It "does not remove non-empty folders" {
+
+    "$testFolder/ShouldNotBeDeleted1/",
+    "$testFolder/ShouldNotBeDeleted2/",
+    "$testFolder/ShouldNotBeDeleted2/ShouldNotBeDeleted3" |
+      ForEach-Object { Test-Path $_ | Should -Be $true }
   }
 
   It "removes empty folders" {
-    Test-Path @(
-      "$testFolder/empty1"
-      "$testFolder/nested empty 1/empty2"
-      "$testFolder/nested non empty1/empty3"
-    ) | ForEach-Object { Test-Path $_ | Should -Be $false }
+
+    "$testFolder/ShouldBeDeleted1",
+    "$testFolder/ShouldBeDeleted2",
+    "$testFolder/ShouldBeDeleted2/ShouldBeDeleted3",
+    "$testFolder/ShouldNotBeDeleted2/ShouldBeDeleted4" |
+      ForEach-Object { Test-Path $_ | Should -Be $false }
   }
 }
