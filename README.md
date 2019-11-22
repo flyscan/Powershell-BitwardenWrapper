@@ -34,3 +34,5 @@ switch easily between default and google DNS. Because someone thought having an 
 ### Start-JobWithCallback
 
 an example of how to write a reactive asynchronous job.
+
+<!-- TODO check scoop status once a day? -->

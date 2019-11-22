@@ -38,4 +38,7 @@ Describe "Remove-EmptyFolders" {
     "$testFolder/ShouldNotBeDeleted2/ShouldBeDeleted4" |
       ForEach-Object { Test-Path $_ | Should -Be $false }
   }
+
+  # Cleanup
+  Remove-Item -Recurse $testFolder
 }
