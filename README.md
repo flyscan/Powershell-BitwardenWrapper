@@ -2,6 +2,7 @@
 
 <!--  TODO add tests to pretty much everything
       TODO add documentation to pretty much everything
+      TODO run scoop update & status once a day
 -->
 
 ![](https://github.com/erclu/powershell-utils/workflows/PowerShell%20Core%20CI/badge.svg)
