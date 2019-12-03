@@ -57,12 +57,7 @@
   # RequiredAssemblies = @()
 
   # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-  ScriptsToProcess  = @(
-    "./Classes/Login.ps1"
-    "./Classes/PasswordHistory.ps1"
-    "./Classes/Uri.ps1"
-    "./Classes/Item.ps1"
-  )
+  # ScriptsToProcess  = @()
 
   # Type files (.ps1xml) to be loaded when importing this module
   # TypesToProcess = @()
