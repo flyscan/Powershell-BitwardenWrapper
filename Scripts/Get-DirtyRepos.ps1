@@ -2,8 +2,19 @@
 param (
   # Folder to search for dirty repositories
   [System.IO.DirectoryInfo]
-  $RootFolder = $env:PROJECTS_FOLDER
+  $RootFolder = $env:PROJECTS_FOLDER,
+  [string]
+  $SaveToVariable
 )
+
+$forEachArguments = @{
+  OutVariable = if ($SaveToVariable) {
+    "OutVariable"
+  }
+  else {
+    $null
+  }
+}
 
 Get-ChildItem -Force -Recurse $RootFolder -Include ".git" |
   ForEach-Object {
@@ -22,5 +33,10 @@ Get-ChildItem -Force -Recurse $RootFolder -Include ".git" |
       "Commits to push"   = $unpushedCommits
       "Stashes to clear"  = $forgottenStashes
     }
-  } |
+  } @forEachArguments |
   Format-Table
+
+if ($SaveToVariable) {
+  Write-Verbose "setting variable $SaveToVariable in parent scope"
+  Set-Variable -Scope 1 -Name $SaveToVariable -Value $OutVariable
+}
