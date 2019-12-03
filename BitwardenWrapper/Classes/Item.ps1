@@ -1,21 +1,3 @@
-class PasswordHistory {
-  [System.DateTime] $lastUsedDate
-  [System.String] $password
-}
-
-class Uri {
-  [System.UInt16] $match
-  [System.String] $uri
-}
-
-class Login {
-  [Uri[]] $uris
-  [System.String] $username
-  [System.String] $password
-  [System.Object] $totp
-  [System.Nullable[System.DateTime]] $passwordRevisionDate
-}
-
 class Item {
   [System.String] $object
   [System.String] $id

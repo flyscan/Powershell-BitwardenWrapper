@@ -1,5 +1,6 @@
 function Unlock-BitwardenDatabase {
   [CmdletBinding()]
+  param ()
 
   $WRONG_MASTER_PASSWORD = 'Invalid master password.'
   $EMPTY_MASTER_PASSWORD = 'Master password is required.'
@@ -27,10 +28,13 @@ function Unlock-BitwardenDatabase {
   $env:BW_SESSION = $SESSION
 }
 
-. "$PSScriptRoot/Classes/Item.ps1"
+Get-ChildItem -Recurse -File -LiteralPath "$PSScriptRoot/Classes" | ForEach-Object {
+  . $_.FullName
+}
 
 function Get-BitwardenDatabase {
   [CmdletBinding()]
+  param ()
 
   $lastSync = (Get-Date) - (Get-Date (bw.exe sync --last))
   if ($lastSync -ge [timespan]::FromMinutes(5)) {
@@ -42,7 +46,7 @@ function Get-BitwardenDatabase {
   }
 
   $rawOutput = bw.exe list items
-  return "{`"root`":$rawOutput}" | ConvertFrom-Json | Select-Object -ExpandProperty root
+  return " { `"root`":$rawOutput }" | ConvertFrom-Json | Select-Object -ExpandProperty root
   # TODO cast to classes defined in Classes.ps1?
 }
 
@@ -58,7 +62,7 @@ function Test-ContainsSensitiveWords {
     $SensitiveWords
   )
 
-  $null -ne ($SensitiveWords | Where-Object { $InputString -match $_ } | Select-Object -First 1)
+  return $null -ne ($SensitiveWords | Where-Object { $InputString -match $_ } | Select-Object -First 1)
 }
 
 # Unlock-BitwardenDatabase
