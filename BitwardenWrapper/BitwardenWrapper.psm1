@@ -45,25 +45,19 @@ function Get-BitwardenDatabase {
   return "{`"root`":$rawOutput}" | ConvertFrom-Json | Select-Object -ExpandProperty root
 }
 
-# TODO emulate python's "any()"
-# function Test-HasSensitiveWords {
-#   [CmdletBinding()]
-#   param (
-#     [Parameter(Mandatory, ValueFromPipeline)]
-#     [String]
-#     $InputString,
-#     [Parameter(Mandatory)]
-#     [String[]]
-#     $SensitiveWords
-#   )
+function Test-HasSensitiveWords {
+  [CmdletBinding()]
+  [OutputType([bool])]
+  param (
+    [Parameter(Mandatory)]
+    [String[]]
+    $SensitiveWords,
+    [Parameter(Mandatory, ValueFromPipeline)]
+    [String]
+    $InputString
+  )
 
-#   foreach ($word in $SensitiveWords) {
-#     if ($InputObject -match $word) {
-#       return $true
-#     }
-#   }
-
-#   return $false
-# }
+  $null -ne ($SensitiveWords | Where-Object { $InputString -match $_ } | Select-Object -First 1)
+}
 
 # Unlock-BitwardenDatabase
