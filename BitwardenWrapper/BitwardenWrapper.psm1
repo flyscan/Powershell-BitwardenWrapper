@@ -43,6 +43,7 @@ function Get-BitwardenDatabase {
 
   $rawOutput = bw.exe list items
   return "{`"root`":$rawOutput}" | ConvertFrom-Json | Select-Object -ExpandProperty root
+  # TODO cast to classes defined in Classes.ps1?
 }
 
 function Test-ContainsSensitiveWords {
