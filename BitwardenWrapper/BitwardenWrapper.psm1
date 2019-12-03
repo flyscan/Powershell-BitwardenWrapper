@@ -45,16 +45,16 @@ function Get-BitwardenDatabase {
   return "{`"root`":$rawOutput}" | ConvertFrom-Json | Select-Object -ExpandProperty root
 }
 
-function Test-HasSensitiveWords {
+function Test-ContainsSensitiveWords {
   [CmdletBinding()]
   [OutputType([bool])]
   param (
-    [Parameter(Mandatory)]
-    [String[]]
-    $SensitiveWords,
     [Parameter(Mandatory, ValueFromPipeline)]
     [String]
-    $InputString
+    $InputString,
+    [Parameter(Mandatory)]
+    [String[]]
+    $SensitiveWords
   )
 
   $null -ne ($SensitiveWords | Where-Object { $InputString -match $_ } | Select-Object -First 1)
