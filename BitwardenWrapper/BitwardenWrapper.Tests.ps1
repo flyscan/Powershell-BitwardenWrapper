@@ -2,48 +2,79 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.ps1'
 
-Import-Module -Force $here/$sut
-
 Describe "BitwardenWrapper" {
+  Import-Module -Force $here/$sut
 
-  It "should test the module" -Pending {
-    # TODO
+  It "should have imported the module" {
+    { Get-Command Unlock-BitwardenDatabase } | Should -Not -Throw "not recognized as the name of a cmdlet, function, script file, or operable program."
   }
 }
 
-Describe "Test-ContainsSensitiveWords" {
+Describe "function Test-ContainsSensitiveWords" {
+  Import-Module -Force $here/$sut
 
   Context "Edge cases" {
+    $testCases = @(
+      @{
+        inputString    = ""
+        sensitiveWords = @()
+      },
+      @{
+        inputString    = ""
+        sensitiveWords = "one", "two"
+      },
+      @{
+        inputString    = "string"
+        sensitiveWords = @()
+      }
+    )
 
-    It "should throw when null parameters are given" {
-      { Test-ContainsSensitiveWords -InputString "" -SensitiveWords @() } | Should -Throw
-    }
+    It "should throw when given <inputString> and <sensitiveWords>" -TestCases $testCases {
+      param(
+        [String]$inputString,
+        [String[]]$sensitiveWords
+      )
 
-    It "should throw when inputString is null" {
-      { Test-ContainsSensitiveWords -InputString "" -SensitiveWords "one", "two" } | Should -Throw
-    }
-
-    It "should throw when SensitiveWords is null" {
-      { Test-ContainsSensitiveWords -InputString "string" -SensitiveWords @() } | Should -Throw
+      { Test-ContainsSensitiveWords -InputString $inputString -SensitiveWords $sensitiveWords } |
+        Should -Throw "Cannot bind argument to parameter"
     }
   }
 
   Context "Normal Behaviour" {
 
-    It "should return false if input string is not in the array" {
-      Test-ContainsSensitiveWords -InputString "one" -SensitiveWords "two", "three" | Should -Be $false
-    }
+    $testCases = @(
+      @{
+        inputString    = "one"
+        sensitiveWords = "two", "three"
+        expectedResult = $false
+      },
+      @{
+        inputString    = "two"
+        sensitiveWords = "one", "two"
+        expectedResult = $true
+      },
+      @{
+        # false when input string is a partial match
+        inputString    = "on"
+        sensitiveWords = "one", "two"
+        expectedResult = $false
+      },
+      @{
+        # true when input string contains any of the sensitive words
+        inputString    = "bone"
+        sensitiveWords = "one", "two"
+        expectedResult = $true
+      }
+    )
 
-    It "should return true if input string is in the array" {
-      Test-ContainsSensitiveWords -InputString "two" -SensitiveWords "one", "two" | Should -Be $true
-    }
+    It "should be <expectedResult> when given <inputString> and <sensitiveWords>" -TestCases $testCases {
+      param(
+        [String]$inputString,
+        [String[]]$sensitiveWords,
+        [bool]$expectedResult
+      )
 
-    It "should return false if input string is a partial match for any of the array items" {
-      Test-ContainsSensitiveWords -InputString "on" -SensitiveWords "one", "two" | Should -Be $false
-    }
-
-    It "should return true if input string contains any of the array items" {
-      Test-ContainsSensitiveWords -InputString "bone" -SensitiveWords "one", "two" | Should -Be $true
+      Test-ContainsSensitiveWords -InputString $inputString -SensitiveWords $sensitiveWords | Should -be $expectedResult
     }
   }
 }
