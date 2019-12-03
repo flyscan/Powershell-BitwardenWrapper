@@ -14,6 +14,10 @@ Some (arguably) useful utilities I wrote.
 
 a valiant but laughable effort to simplify my eventual transition to other pcs.
 
+## BitwardenWrapper
+
+a class definition for bitwarden cli output, and tools to check if I have duplicated passwords and similar.
+
 ## PSPythonUtils
 
 a project scaffolding function, and some cmdlets to manage the virtual environments created by pipenv.

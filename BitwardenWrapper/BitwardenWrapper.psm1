@@ -1,0 +1,69 @@
+function Unlock-BitwardenDatabase {
+  [CmdletBinding()]
+
+  $WRONG_MASTER_PASSWORD = 'Invalid master password.'
+  $EMPTY_MASTER_PASSWORD = 'Master password is required.'
+
+  if ($env:BW_SESSION) {
+    Write-Output "Bitwarden database was already unlocked"
+    return
+  }
+
+  $SESSION = bw.exe unlock --raw
+
+  if (Get-Module PSReadLine) {
+    Write-Verbose "Removing PSReadline module"
+    Remove-Module PSReadLine
+  }
+
+  if ($SESSION -match $WRONG_MASTER_PASSWORD -or $SESSION -match $EMPTY_MASTER_PASSWORD) {
+    Throw "Unlock failed"
+  }
+
+  Write-Output "Bitwarden database unlocked"
+
+  # remember current session
+  Write-Verbose "Saving session key to environment variable"
+  $env:BW_SESSION = $SESSION
+}
+
+. "$PSScriptRoot/Classes/Item.ps1"
+
+function Get-BitwardenDatabase {
+  [CmdletBinding()]
+
+  $lastSync = (Get-Date) - (Get-Date (bw.exe sync --last))
+  if ($lastSync -ge [timespan]::FromMinutes(5)) {
+    Write-Verbose "Syncing db"
+    bw.exe sync | Out-Null
+  }
+  else {
+    Write-Verbose "Using cached db"
+  }
+
+  $rawOutput = bw.exe list items
+  return "{`"root`":$rawOutput}" | ConvertFrom-Json | Select-Object -ExpandProperty root
+}
+
+# TODO emulate python's "any()"
+# function Test-HasSensitiveWords {
+#   [CmdletBinding()]
+#   param (
+#     [Parameter(Mandatory, ValueFromPipeline)]
+#     [String]
+#     $InputString,
+#     [Parameter(Mandatory)]
+#     [String[]]
+#     $SensitiveWords
+#   )
+
+#   foreach ($word in $SensitiveWords) {
+#     if ($InputObject -match $word) {
+#       return $true
+#     }
+#   }
+
+#   return $false
+# }
+
+# Unlock-BitwardenDatabase
