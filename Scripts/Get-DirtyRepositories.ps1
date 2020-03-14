@@ -62,13 +62,17 @@ $repos |
     $gitDir = $_
     $workTree = Split-Path -Path $_ -Parent
 
+    $dirtyIndex = Test-HasDirtyIndex $gitDir
+    $unpushedCommits = Test-HasUnpushedCommits $gitDir
+    $forgottenStashes = Test-HasForgottenStashes $gitDir
+
     [pscustomobject]@{
       PSTypename      = "GitRepo"
       Repo            = $workTree
       AllGood         = -not ($dirtyIndex -or $unpushedCommits -or $forgottenStashes)
-      ChangesToCommit = Test-HasDirtyIndex $gitDir
-      CommitsToPush   = Test-HasUnpushedCommits $gitDir
-      StashesToClear  = Test-HasForgottenStashes $gitDir
+      ChangesToCommit = $dirtyIndex
+      CommitsToPush   = $unpushedCommits
+      StashesToClear  = $forgottenStashes
     }
   } @forEachArguments
 
