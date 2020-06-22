@@ -74,13 +74,18 @@ $repos |
     $unpushedCommits = Test-HasUnpushedCommits $gitDir
     $forgottenStashes = Test-HasForgottenStashes $gitDir
 
+    # TODO might wanna refactor this
+    $ignoredFilesAndFolders = ( git --git-dir $gitDir --work-tree $workTree status -s --ignored ) | Measure-Object | Select-Object -ExpandProperty Count
+
     [pscustomobject]@{
       PSTypename      = "GitRepo"
       Repo            = $workTree
-      AllGood         = -not ($dirtyIndex -or $unpushedCommits -or $forgottenStashes)
+      AllGood         = -not ($dirtyIndex -or $unpushedCommits -or $forgottenStashes )
       ChangesToCommit = $dirtyIndex
       CommitsToPush   = $unpushedCommits
       StashesToClear  = $forgottenStashes
+      # AllGood does not count these
+      Ignored         = $ignoredFilesAndFolders
     }
   } @forEachArguments
 
