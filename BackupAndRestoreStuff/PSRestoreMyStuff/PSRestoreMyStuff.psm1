@@ -10,7 +10,7 @@ function Install-ScoopWithPackages {
   Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -OutFile install.ps1
 
   # FIXME not cross platform
-  ./install.ps1 -ScoopDir 'C:/Tools/scoop' -NoProxy -RunAsAdmin
+  ./install.ps1 -ScoopDir 'C:/Tools/scoop' -ScoopGlobalDir 'C:/Tools/scoop-global-apps' -NoProxy -RunAsAdmin
 
   Remove-Item ./install.ps1
 

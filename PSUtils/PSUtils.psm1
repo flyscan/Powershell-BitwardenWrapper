@@ -27,8 +27,15 @@ function Update-ScoopAndCleanAfter {
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param ()
 
+  $telegram = "telegram"
+
   scoop update
-  scoop status
+  $out = scoop status
+  $out
+  if ($out -match $telegram) {
+    Write-Output "stopping telegram..."
+    Get-Process $telegram | Stop-Process
+  }
 
   if ($PSCmdlet.ShouldProcess("Update apps")) {
     scoop update *
@@ -40,6 +47,11 @@ function Update-ScoopAndCleanAfter {
   Write-Output "Clearing cache..."
   scoop cache show
   scoop cache rm *
+
+  if ($out -match $telegram) {
+    Write-Output "starting telegram..."
+    & $telegram
+  }
 }
 
 ########################################################################################################################
@@ -113,7 +125,7 @@ function Find-Duplicates {
     [String[]]
     $Paths = "."
   )
-  python D:/Projects/_LIBRARIES-WHEELS-ETC/find_duplicates.py $Paths
+  python 'D:/Projects/__libraries-wheels-etc/find_duplicates.py' $Paths
 }
 
 function New-TemporaryDirectory {
