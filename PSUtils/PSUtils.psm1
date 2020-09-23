@@ -222,3 +222,51 @@ function Add-ModuleShim {
 
   New-Item -ItemType Junction -Path $ShimPath -Value $ModuleFolder -Confirm
 }
+
+function Get-OldVsCodeExtensions {
+  [CmdletBinding()]
+  param (
+    # [switch]
+    # $Aggro
+  )
+
+  $VSCODE_EXTENSIONS_DIR = "C:/Tools/scoop/apps/vscode-portable/current/data/extensions"
+
+  $SEMVER_REGEX = "(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
+  $SPLITTER_REGEX = "^(?<name>.*?)-(?<version>$SEMVER_REGEX)$"
+
+  # if (-not $Aggro) {
+  $DATETIME_CUTOFF = (Get-Date).AddDays(-7)
+  # }
+  # else {
+  #   $DATETIME_CUTOFF = Get-Date
+  # }
+
+  Get-ChildItem -Directory -Path $VSCODE_EXTENSIONS_DIR |
+    Sort-Object -Descending CreationTime |
+    Where-Object LastWriteTime -GT $DATETIME_CUTOFF |
+    ForEach-Object {
+      $name = $_.Name
+
+      if (-not ($name -match $SPLITTER_REGEX)) {
+        Write-Error "this name is not correctly matched: $name"
+      }
+
+      [pscustomobject]@{
+        Name      = $Matches.name
+        Version   = $Matches.version
+        Directory = $_
+      }
+    } |
+    Group-Object Name |
+    Where-Object Count -GT 1 |
+    ForEach-Object {
+      $newest, $old = $_.Group
+
+      $old.Directory
+    } |
+    # Flatten array of arrays
+    ForEach-Object {
+      $_
+    }
+}
