@@ -160,3 +160,65 @@ function Find-HardLinks {
     Where-Object { $_.LinkType } |
     Select-Object FullName, LinkType, Target
 }
+
+########################################################################################################################
+####################################### Send Magic Packet
+########################################################################################################################
+
+<#
+  .SYNOPSIS
+    Send a WOL packet to a broadcast address
+  .PARAMETER mac
+   The MAC address of the device that need to wake up
+  .PARAMETER ip
+   The IP address where the WOL packet will be sent to
+  .EXAMPLE
+   Send-WOL -mac 00:11:32:21:2D:11 -ip 192.168.8.255
+#>
+function Send-MagicPacket {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $True, Position = 1)]
+    [string]$mac,
+    [string]$ip = "255.255.255.255",
+    [int]$port = 9
+  )
+  $broadcast = [Net.IPAddress]::Parse($ip)
+
+  $mac = (($mac.replace(":", "")).replace("-", "")).replace(".", "")
+  $target = 0, 2, 4, 6, 8, 10 | ForEach-Object { [convert]::ToByte($mac.substring($_, 2), 16) }
+  $packet = (, [byte]255 * 6) + ($target * 16)
+
+  $UDPclient = New-Object System.Net.Sockets.UdpClient
+  $UDPclient.Connect($broadcast, $port)
+  [void]$UDPclient.Send($packet, 102)
+}
+
+########################################################################################################################
+####################################### Misc
+########################################################################################################################
+
+function Invoke-SshCopyId {
+  Param(
+    [parameter(Mandatory, Position = 1)]
+    [String]
+    $Destination
+  )
+
+  Get-Content "~/.ssh/id_rsa.pub" | ssh $Destination "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+}
+
+
+function Add-ModuleShim {
+  [CmdletBinding()]
+  param (
+    [System.IO.DirectoryInfo]
+    $ModuleFolder
+  )
+
+  $ModuleName = $ModuleFolder.Name
+
+  $ShimPath = Join-Path "$HOME/Documents/PowerShell/Modules/" $ModuleName
+
+  New-Item -ItemType Junction -Path $ShimPath -Value $ModuleFolder -Confirm
+}
